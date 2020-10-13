@@ -1,0 +1,21 @@
+{
+    "name": "mcx-internet-monitor",
+    "version": "0.1.0",
+    "description": "A simple tool to log internet up and down times to a log file, written in nodejs.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "author": "Marc Christenfeldt",
+    "license": "MIT",
+    "dependencies": {
+        "lodash": "^4.17.20",
+        "moment": "^2.29.1",
+        "ping": "^0.3.0"
+    },
+    "keywords": [
+        "internet",
+        "connection",
+        "monitoring"
+    ]
+}
