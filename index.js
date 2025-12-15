@@ -23,6 +23,8 @@ const LOCALE_DATETIME = 'de';
 const LOCALE_TIMEDIFF = 'en';
 
 /**
+ * @class InternetConnectionChecker
+ * @description Checks the internet connection by pinging a list of hosts.
  * 10/2020 created
  */
 class InternetConnectionChecker {
@@ -32,8 +34,8 @@ class InternetConnectionChecker {
     pathLogfile = null;
 
     /**
-     *
-     * @param {string} pathLogfile
+     * @constructor
+     * @param {string} pathLogfile - The path to the log file.
      */
     constructor(pathLogfile) {
         this.pathLogfile = pathLogfile;
@@ -58,9 +60,9 @@ class InternetConnectionChecker {
     }
 
     /**
-     * pings all hosts and at least one must be alive to assume that internet is working
+     * Pings all hosts and at least one must be alive to assume that internet is working.
      *
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>} - True if the internet connection is up, false otherwise.
      */
     async getIsInternetUp() {
         // ---- ping all hosts async
@@ -80,9 +82,10 @@ class InternetConnectionChecker {
 
 
     /**
+     * Pings a single host.
      *
-     * @param {string} host
-     * @return {Promise<boolean>}
+     * @param {string} host - The host to ping.
+     * @returns {Promise<boolean>} - True if the host is reachable, false otherwise.
      */
     pingPromise(host) {
         return new Promise((resolve, reject) => {
@@ -98,9 +101,9 @@ class InternetConnectionChecker {
 
 
     /**
-     * checks if internet connection is up .. logs to logfile if connection state changed
+     * Checks if internet connection is up and logs to logfile if connection state changed.
      *
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async checkInternetConnection() {
         const isInternetUp = await this.getIsInternetUp()
@@ -131,19 +134,30 @@ class InternetConnectionChecker {
 
     }
 
+    /**
+     * Gets the current date and time as a formatted string.
+     * @returns {string} - The formatted date and time.
+     * @private
+     */
     _getDate() {
         return moment().locale(LOCALE_DATETIME).format('LLL');
     };
 
+    /**
+     * Gets the time difference since the last state change in a human-readable format.
+     * @returns {string} - The human-readable time difference.
+     * @private
+     */
     _getTimeDiffHumanReadable() {
         const end = moment()
         return moment.duration(end.diff(this.stateSince)).locale(LOCALE_TIMEDIFF).humanize({ss: 0});
     };
 
     /**
+     * Appends a line to the log file.
      *
-     * @param logLine
-     * @return {Promise<void>}
+     * @param {string} logLine - The line to append to the log.
+     * @returns {Promise<void>}
      * @private
      */
     _appendToLog(logLine) {
@@ -160,10 +174,18 @@ class InternetConnectionChecker {
         });
     }
 
+    /**
+     * Logs that the internet connection is back up.
+     * @private
+     */
     logInternetIsBack() {
         this._appendToLog(`UP (was down for ${this._getTimeDiffHumanReadable()})`);
     }
 
+    /**
+     * Logs that the internet connection went down.
+     * @private
+     */
     logInternetWentDown() {
         this._appendToLog(`DOWN (was up for ${this._getTimeDiffHumanReadable()})`);
     }
