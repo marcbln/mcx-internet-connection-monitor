@@ -9,7 +9,6 @@
 const ping = require('ping');
 const fs = require('fs');
 const moment = require('moment');
-const _ = require('lodash');
 
 const INTERVAL = 1; // seconds
 const PATH_DEFAULT_LOG = './internet-connection.log';
@@ -66,18 +65,19 @@ class InternetConnectionChecker {
      */
     async getIsInternetUp() {
         // ---- ping all hosts async
-        const promises = [];
-        for (const host of HOSTS) {
-            promises.push(this.pingPromise(host));
+        // Use a custom promise wrapper to short-circuit on the first successful ping
+        // This is more efficient than Promise.all as it doesn't wait for all pings to complete
+        const promises = HOSTS.map(host => this.pingPromise(host));
+
+        try {
+            await Promise.any(promises.map(p => p.then(isAlive => {
+                if (isAlive) return Promise.resolve(true);
+                return Promise.reject(false);
+            })));
+            return true;
+        } catch (e) {
+            return false;
         }
-        const results = await Promise.all(promises);
-        const wasAtLeastOnePingSuccessful = _.reduce(results, function (sum, n) {
-            return sum || n;
-        }, false);
-
-        // console.log(results, wasAtLeastOnePingSuccessful);
-
-        return wasAtLeastOnePingSuccessful;
     }
 
 
